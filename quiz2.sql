@@ -1,11 +1,5 @@
---Drop tables
--- DROP TABLE IF EXISTS albums_track CASCADE;
--- DROP TABLE IF EXISTS albums;
--- DROP TABLE IF EXISTS tracks;
-
---Instead use a CASCADE code to drop the tables 
---uncomment these 3 codes and delete the onces you have above
-DROP TABLE IF EXISTS tracks_albums CASCADE;
+--drop table
+DROP TABLE IF EXISTS albums_tracks CASCADE;
 DROP TABLE IF EXISTS albums CASCADE;
 DROP TABLE IF EXISTS tracks CASCADE;
 
@@ -21,26 +15,26 @@ CREATE TABLE albums
 --Inserting the rows into the albums table
 INSERT INTO albums(title, artist,released) 
 VALUES ('SOUR', 'Olivia Rodrigo', 'May 21, 2021'),
-       ('Dangerous: The Double Album', 'Morgan Wallen','January, 2021'),
-       ('Evermore', 'Taylor Swift','December, 2020'),
-       ('Shoot For The Stars Aim For The Moon', 'Pop Smoke','July, 2020'),
-       ('KOD', 'J. Cole','April, 2018'),
-       ('Positions', 'Ariana Grande','October, 2020'),
-       ('Fine Line', 'Harry Styles','December, 2019'),
-       ('Legends Never Die', 'Juice WRLD','July, 2020'),
-       ('The Off-Season', 'J. Cole','May, 2021'),
-       ('DAMN.', 'Kendrick Lamar','April, 2017');
+       ('Dangerous The Double Album', 'Morgan Wallen','2021-01-22'),
+       ('Evermore', 'Taylor Swift','2020-12-10'),
+       ('Shoot For The Stars Aim For The Moon', 'Pop Smoke','2020-05-15'),
+       ('KOD', 'J. Cole','2018-05-18'),
+       ('Positions', 'Ariana Grande','2020-09-12'),
+       ('Fine Line', 'Harry Styles','2019-12-5'),
+       ('Legends Never Die', 'Juice WRLD','020-05-14'),
+       ('The Off-Season', 'J. Cole','2021-06-06'),
+       ('DAMN.', 'Kendrick Lamar','2017-05-19');
 
 CREATE TABLE tracks
  (
     track_ID serial PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     artist text NOT NULL,
-    length_min TIME NOT NULL --not int use time NOT NULL
+    length_min TIME NOT NULL 
 );
 
 --Inserting the rows into the tracks table
-INSERT INTO tracks(title,artist,length_min) --include data for all (except ID)the other data you created in the tracks table not olny the title and  length_min
+INSERT INTO tracks(title,artist,length_min) 
 VALUES ('BLOOD.', 'Kendrick Lamar','00:01:58'), 
        ('willow','Taylor Swift', '00:03:34'),
        ('tolerate it', 'Taylor Swift','00:04:06'),
@@ -79,4 +73,40 @@ SELECT *
 FROM tracks;
 
 SELECT * 
-FROM albums_track;
+FROM albums_tracks;
+
+
+--Write an SQL query to see the albums and the tracks that belong to that album.\
+SELECT A.title, T.title,T.length_min
+FROM albums AS A
+INNER JOIN albums_tracks AS AT
+ON A.album_ID = AT.album_ID
+INNER JOIN tracks AS T
+ON AT.track_ID = T.track_ID;
+
+--Write an SQL query to see the album or albums that each track belongs to
+SELECT T.title AS track_name, T.length_min AS track_length, A.title AS released_on_album
+FROM tracks as T
+INNER JOIN albums_tracks AS AT
+ON T.track_ID = AT.track_ID
+INNER JOIN albums AS A
+ON AT.album_ID = A.album_ID;
+
+--Write a query to see the number of songs an album has.
+SELECT A.title AS album_title, COUNT(T.track_ID)
+FROM albums AS A
+FULL JOIN albums_tracks AS AT
+ON A.album_ID = AT.album_ID
+FULL JOIN tracks AS T
+ON AT.track_ID = T.track_ID
+GROUP BY A.album_ID;
+
+--Write a query to see how many albums a particular track is included on.
+SELECT T.track_ID As track_ID, COUNT(T.track_ID)
+FROM albums AS A
+FULL JOIN albums_tracks AS AT
+ON A.album_ID = AT.album_ID
+FULL JOIN tracks AS T
+ON AT.track_ID = T.track_ID
+WHERE T.title = '95 South'
+GROUP BY  T.track_ID;
